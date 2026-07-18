@@ -81,7 +81,7 @@ nmt-travels/
 
 1. **Clone the repository**
 ```bash
-git clone <repository-url>
+git clone https://github.com/Bhuvanesh-kumar-k/nmt-travels.git
 cd nmt-travels
 ```
 
@@ -299,16 +299,3 @@ For issues or questions:
 ## License
 
 Proprietary - NMT Travels
-
-## Timeline and Estimates
-
-- **MVP (core flows)**: 2-3 weeks
-- **Hardened production features**: 1-2 weeks
-- **Polish, testing, and deployment**: 1 week
-
-## Cost Estimate
-
-- **Development**: $X (based on team size and rates)
-- **PythonAnywhere Hosting**: $X/month
-- **Domain and SSL**: $X/year
-- **Monitoring (Sentry)**: Free tier available
