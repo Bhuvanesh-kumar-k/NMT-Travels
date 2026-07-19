@@ -99,7 +99,11 @@ class LoginView(generics.GenericAPIView):
     
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            return Response(
+                {'error': 'Invalid request data', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
