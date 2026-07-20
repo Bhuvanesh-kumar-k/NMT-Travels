@@ -9,6 +9,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from django.db import models
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 import secrets
 import hashlib
 from .models import Driver
@@ -93,6 +95,7 @@ class AuditLogMixin:
             ip = self.request.META.get('REMOTE_ADDR')
         return ip
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
