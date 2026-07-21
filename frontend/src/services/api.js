@@ -16,18 +16,27 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('DEBUG API REQUEST:', config.method?.toUpperCase(), config.url, config.data);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.log('DEBUG API REQUEST ERROR:', error);
+    return Promise.reject(error);
+  }
 );
 
 // Handle token refresh
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('DEBUG API RESPONSE:', response.config.url, response.status, response.data);
+    return response;
+  },
   async (error) => {
+    console.log('DEBUG API ERROR:', error.config?.url, error.response?.status, error.response?.data, error.message);
     const originalRequest = error.config;
     // Don't attempt refresh on login endpoint or if already retried
     if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login/')) {
+      console.log('DEBUG: Attempting token refresh');
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem('refresh_token');
       try {
@@ -39,6 +48,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
       } catch (refreshError) {
+        console.log('DEBUG: Token refresh failed', refreshError);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';

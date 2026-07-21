@@ -16,18 +16,33 @@ const Login = () => {
     setError('');
     setLoading(true);
 
+    console.log('DEBUG LOGIN: Starting login process');
+    console.log('DEBUG LOGIN: Username:', username);
+    console.log('DEBUG LOGIN: Password length:', password.length);
+
     try {
+      console.log('DEBUG LOGIN: Calling login API');
       const { user, must_change_password } = await login(username, password);
+      console.log('DEBUG LOGIN: Login successful', { user, must_change_password });
+      
       if (must_change_password) {
+        console.log('DEBUG LOGIN: Navigating to change-password');
         navigate('/change-password');
       } else if (user.role === 'admin') {
+        console.log('DEBUG LOGIN: Navigating to admin dashboard');
         navigate('/admin/dashboard');
       } else {
+        console.log('DEBUG LOGIN: Navigating to driver dashboard');
         navigate('/driver/dashboard');
       }
     } catch (err) {
+      console.log('DEBUG LOGIN: Login failed', err);
+      console.log('DEBUG LOGIN: Error response:', err.response);
+      console.log('DEBUG LOGIN: Error data:', err.response?.data);
+      console.log('DEBUG LOGIN: Error status:', err.response?.status);
       setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
+      console.log('DEBUG LOGIN: Setting loading to false');
       setLoading(false);
     }
   };
