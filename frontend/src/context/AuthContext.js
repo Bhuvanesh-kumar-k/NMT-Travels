@@ -26,11 +26,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (username, password) => {
+    console.log('DEBUG AUTH CONTEXT: Starting login');
+    console.log('DEBUG AUTH CONTEXT: Username:', username);
     const response = await authAPI.login(username, password);
+    console.log('DEBUG AUTH CONTEXT: Login response:', response);
     const { access, refresh, user: userData, must_change_password } = response.data;
+    console.log('DEBUG AUTH CONTEXT: Extracted data:', { access: access?.substring(0, 20) + '...', refresh: refresh?.substring(0, 20) + '...', userData, must_change_password });
     localStorage.setItem('access_token', access);
     localStorage.setItem('refresh_token', refresh);
     setUser(userData);
+    console.log('DEBUG AUTH CONTEXT: Login complete, returning user data');
     return { user: userData, must_change_password };
   };
 
