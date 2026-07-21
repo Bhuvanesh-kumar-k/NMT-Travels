@@ -1,11 +1,11 @@
 from django.urls import path
 from .views import (
-    LoginView, LogoutView, ChangePasswordView, ForgotPasswordView,
+    login_view, LogoutView, ChangePasswordView, ForgotPasswordView,
     AdminResetDriverPasswordView, DriverListView, DriverDetailView, current_user
 )
 
 urlpatterns = [
-    path('auth/login/', LoginView.as_view(), name='login'),
+    path('auth/login/', login_view, name='login'),
     path('auth/logout/', LogoutView.as_view(), name='logout'),
     path('auth/change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('auth/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),

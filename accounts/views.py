@@ -95,63 +95,61 @@ class AuditLogMixin:
             ip = self.request.META.get('REMOTE_ADDR')
         return ip
 
-@method_decorator(csrf_exempt, name='dispatch')
-class LoginView(generics.GenericAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = LoginSerializer
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def login_view(request):
+    print(f"DEBUG: login_view called with method: {request.method}")
+    print(f"DEBUG: Request data: {request.data}")
+    print(f"DEBUG: Request content type: {request.content_type}")
+    print(f"DEBUG: Request headers: {dict(request.headers)}")
     
-    def post(self, request):
-        print(f"DEBUG: LoginView called with method: {request.method}")
-        print(f"DEBUG: Request data: {request.data}")
-        print(f"DEBUG: Request content type: {request.content_type}")
-        print(f"DEBUG: Request headers: {dict(request.headers)}")
+    try:
+        serializer = LoginSerializer(data=request.data)
+        print(f"DEBUG: Serializer created: {serializer}")
         
-        try:
-            serializer = self.get_serializer(data=request.data)
-            print(f"DEBUG: Serializer created: {serializer}")
-            
-            if not serializer.is_valid():
-                print(f"DEBUG: Serializer validation failed: {serializer.errors}")
-                return Response(
-                    {'error': 'Invalid request data', 'details': serializer.errors},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            username = serializer.validated_data['username']
-            password = serializer.validated_data['password']
-            print(f"DEBUG: Username: {username}")
-            
-            user = authenticate(username=username, password=password)
-            print(f"DEBUG: Authenticated user: {user}")
-            
-            if user is None:
-                return Response(
-                    {'error': 'Invalid credentials'},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
-            
-            if not user.is_active:
-                return Response(
-                    {'error': 'Account is disabled'},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            
-            refresh = RefreshToken.for_user(user)
-            
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'user': UserSerializer(user).data,
-                'must_change_password': user.must_change_password
-            })
-        except Exception as e:
-            print(f"DEBUG: Exception in LoginView: {str(e)}")
-            import traceback
-            traceback.print_exc()
+        if not serializer.is_valid():
+            print(f"DEBUG: Serializer validation failed: {serializer.errors}")
             return Response(
-                {'error': f'Server error: {str(e)}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {'error': 'Invalid request data', 'details': serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
             )
+        
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        print(f"DEBUG: Username: {username}")
+        
+        user = authenticate(username=username, password=password)
+        print(f"DEBUG: Authenticated user: {user}")
+        
+        if user is None:
+            return Response(
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if not user.is_active:
+            return Response(
+                {'error': 'Account is disabled'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': UserSerializer(user).data,
+            'must_change_password': user.must_change_password
+        })
+    except Exception as e:
+        print(f"DEBUG: Exception in login_view: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'error': f'Server error: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 class LogoutView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
