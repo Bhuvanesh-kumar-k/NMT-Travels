@@ -18,12 +18,23 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+import os
+
+def serve_react(request):
+    """Serve the React app"""
+    try:
+        with open(os.path.join(settings.BASE_DIR, 'static', 'frontend', 'index.html'), 'r') as f:
+            return HttpResponse(f.read())
+    except FileNotFoundError:
+        return HttpResponse("React app not built. Run 'npm run build' in frontend directory.", status=503)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
     path('api/', include('trips.urls')),
     path('api/', include('billing.urls')),
+    path('', serve_react),  # Serve React app for all other routes
 ]
 
 if settings.DEBUG:
