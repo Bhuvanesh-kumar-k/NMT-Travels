@@ -15,14 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
 import os
 
 def serve_react(request):
-    """Serve the React app"""
+    """Serve the React app for all non-API routes"""
     print(f"=== SERVE_REACT CALLED ===")
     print(f"BASE_DIR: {settings.BASE_DIR}")
     
@@ -55,7 +55,7 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
     path('api/', include('trips.urls')),
     path('api/', include('billing.urls')),
-    path('', serve_react),  # Serve React app for all other routes
+    re_path(r'^.*$', serve_react),  # Serve React app for all other routes (catch-all)
 ]
 
 if settings.DEBUG:
