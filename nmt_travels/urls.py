@@ -18,16 +18,29 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+from django.http import HttpResponse
 import os
+
+def serve_react(request):
+    """Serve the React app"""
+    try:
+        # Try staticfiles first (production), then static (development)
+        static_path = os.path.join(settings.BASE_DIR, 'staticfiles', 'frontend', 'index.html')
+        if not os.path.exists(static_path):
+            static_path = os.path.join(settings.BASE_DIR, 'static', 'frontend', 'index.html')
+        
+        with open(static_path, 'r') as f:
+            content = f.read()
+            return HttpResponse(content, content_type='text/html')
+    except FileNotFoundError:
+        return HttpResponse("React app not built. Run 'npm run build' in frontend directory.", status=503)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),
     path('api/', include('trips.urls')),
     path('api/', include('billing.urls')),
-    # Serve React app from static files
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', serve_react),  # Serve React app for all other routes
 ]
 
 if settings.DEBUG:
