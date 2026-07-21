@@ -59,7 +59,7 @@ ROOT_URLCONF = 'nmt_travels.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'static' / 'frontend'],  # Add frontend directory for templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
