@@ -55,7 +55,7 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
     path('api/', include('trips.urls')),
     path('api/', include('billing.urls')),
-    re_path(r'^.*$', serve_react),  # Serve React app for all other routes (catch-all)
+    re_path(r'^(?!api/|admin/).*$', serve_react),  # Serve React app for all other routes (catch-all, exclude api and admin)
 ]
 
 if settings.DEBUG:
