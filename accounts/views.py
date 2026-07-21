@@ -100,16 +100,21 @@ class AuditLogMixin:
 @csrf_exempt
 def login_view(request):
     print(f"DEBUG: login_view called with method: {request.method}")
+    print(f"DEBUG: Request data type: {type(request.data)}")
     print(f"DEBUG: Request data: {request.data}")
     print(f"DEBUG: Request content type: {request.content_type}")
+    print(f"DEBUG: Request body: {request.body}")
+    print(f"DEBUG: Request POST: {request.POST}")
     print(f"DEBUG: Request headers: {dict(request.headers)}")
     
     try:
         serializer = LoginSerializer(data=request.data)
         print(f"DEBUG: Serializer created: {serializer}")
+        print(f"DEBUG: Serializer initial data: {serializer.initial_data}")
         
         if not serializer.is_valid():
             print(f"DEBUG: Serializer validation failed: {serializer.errors}")
+            print(f"DEBUG: Serializer errors details: {serializer.errors}")
             return Response(
                 {'error': 'Invalid request data', 'details': serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
@@ -118,6 +123,7 @@ def login_view(request):
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
         print(f"DEBUG: Username: {username}")
+        print(f"DEBUG: Password length: {len(password)}")
         
         user = authenticate(username=username, password=password)
         print(f"DEBUG: Authenticated user: {user}")
