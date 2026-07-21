@@ -23,17 +23,32 @@ import os
 
 def serve_react(request):
     """Serve the React app"""
+    print(f"=== SERVE_REACT CALLED ===")
+    print(f"BASE_DIR: {settings.BASE_DIR}")
+    
     try:
         # Try staticfiles first (production), then static (development)
         static_path = os.path.join(settings.BASE_DIR, 'staticfiles', 'frontend', 'index.html')
+        print(f"Trying staticfiles path: {static_path}")
+        print(f"File exists: {os.path.exists(static_path)}")
+        
         if not os.path.exists(static_path):
             static_path = os.path.join(settings.BASE_DIR, 'static', 'frontend', 'index.html')
+            print(f"Trying static path: {static_path}")
+            print(f"File exists: {os.path.exists(static_path)}")
         
         with open(static_path, 'r') as f:
             content = f.read()
+            print(f"Successfully read index.html, length: {len(content)}")
             return HttpResponse(content, content_type='text/html')
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print(f"FileNotFoundError: {e}")
         return HttpResponse("React app not built. Run 'npm run build' in frontend directory.", status=503)
+    except Exception as e:
+        print(f"Exception in serve_react: {e}")
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(f"Error serving React app: {str(e)}", status=500)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
