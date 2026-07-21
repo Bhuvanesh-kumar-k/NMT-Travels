@@ -8,49 +8,36 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [debugLogs, setDebugLogs] = useState([]);
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  const addDebugLog = (message) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setDebugLogs(prev => [...prev, `[${timestamp}] ${message}`]);
-    console.log(message);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setDebugLogs([]);
 
-    addDebugLog('Starting login process');
-    addDebugLog(`Username: ${username}`);
-    addDebugLog(`Password length: ${password.length}`);
+    alert(`DEBUG: Starting login process\nUsername: ${username}\nPassword length: ${password.length}`);
 
     try {
-      addDebugLog('Calling login API');
+      alert('DEBUG: Calling login API');
       const { user, must_change_password } = await login(username, password);
-      addDebugLog(`Login successful - User: ${JSON.stringify(user)}, must_change_password: ${must_change_password}`);
+      alert(`DEBUG: Login successful\nUser: ${JSON.stringify(user)}\nmust_change_password: ${must_change_password}`);
       
       if (must_change_password) {
-        addDebugLog('Navigating to change-password');
+        alert('DEBUG: Navigating to change-password');
         navigate('/change-password');
       } else if (user.role === 'admin') {
-        addDebugLog('Navigating to admin dashboard');
+        alert('DEBUG: Navigating to admin dashboard');
         navigate('/admin/dashboard');
       } else {
-        addDebugLog('Navigating to driver dashboard');
+        alert('DEBUG: Navigating to driver dashboard');
         navigate('/driver/dashboard');
       }
     } catch (err) {
-      addDebugLog(`Login failed: ${err.message}`);
-      addDebugLog(`Error response: ${JSON.stringify(err.response)}`);
-      addDebugLog(`Error data: ${JSON.stringify(err.response?.data)}`);
-      addDebugLog(`Error status: ${err.response?.status}`);
+      alert(`DEBUG: Login failed\nError: ${err.message}\nError response: ${JSON.stringify(err.response)}\nError data: ${JSON.stringify(err.response?.data)}\nError status: ${err.response?.status}`);
       setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
-      addDebugLog('Setting loading to false');
+      alert('DEBUG: Setting loading to false');
       setLoading(false);
     }
   };
@@ -128,16 +115,6 @@ const Login = () => {
             Forgot Password?
           </a>
         </div>
-
-        {/* Debug Panel */}
-        {debugLogs.length > 0 && (
-          <div className="mt-6 bg-gray-900 text-green-400 p-4 rounded-lg text-xs font-mono max-h-60 overflow-y-auto">
-            <div className="font-bold text-white mb-2">DEBUG LOGS:</div>
-            {debugLogs.map((log, index) => (
-              <div key={index} className="mb-1">{log}</div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
